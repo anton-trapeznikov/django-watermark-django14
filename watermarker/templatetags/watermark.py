@@ -149,7 +149,17 @@ class Watermarker(object):
         if os.access(wm_path, os.R_OK):
             # see if the Watermark object was modified since the file was
             # created
-            modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
+
+            #modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
+
+            #modified = timezone.now()
+
+            try:
+                from django.utils.timezone import make_aware, get_current_timezone
+                modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
+                modified = make_aware(modified, get_current_timezone())
+            except ImportError:
+                modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
 
             # only return the old file if things appear to be the same
             if modified >= watermark.date_updated:
